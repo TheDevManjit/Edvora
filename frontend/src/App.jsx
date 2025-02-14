@@ -19,6 +19,7 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={<h1>No Found</h1>} />
         </Route>
       </Routes>
       <Toaster/>
