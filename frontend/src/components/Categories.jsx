@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation"; // Import navigation styles
-import "swiper/css/pagination";
-import "../App.css";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import icons for custom navigation
+// import "swiper/css/navigation";
+// import "swiper/css/pagination";
+import { Box, Typography, Button, Container } from "@mui/material";
 
 const categories = {
   "Data Science": [
@@ -49,32 +48,21 @@ export default function CourseCategories() {
   const [selectedCategory, setSelectedCategory] = useState("Data Science");
 
   return (
-    <div className="p-6">
-      {/* Category Selection */}
-      <div className="flex flex-wrap gap-4 mb-6">
+    <Container className="p-6">
+      <Box className="flex flex-wrap gap-4 mb-6">
         {Object.keys(categories).map((category) => (
-          <p
+          <Button
             key={category}
-            className={`cursor-pointer text-lg font-semibold px-4 py-2 rounded-lg ${
-              selectedCategory === category ? "bg-blue-600 text-white" : "text-gray-800"
-            } hover:bg-blue-500 hover:text-white transition`}
+            variant={selectedCategory === category ? "contained" : "outlined"}
+            color="primary"
             onClick={() => setSelectedCategory(category)}
           >
             {category}
-          </p>
+          </Button>
         ))}
-      </div>
+      </Box>
 
-      {/* Swiper Slider with Navigation */}
-      <div className="relative">
-        {/* Custom Navigation Buttons */}
-        <button className="swiper-button-prev custom-nav-btn left-0 w-2 h-3">
-          <FaChevronLeft />
-        </button>
-        <button className="swiper-button-next custom-nav-btn right-0">
-          <FaChevronRight />
-        </button>
-
+      <Box className="relative">
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
           spaceBetween={20}
@@ -85,23 +73,20 @@ export default function CourseCategories() {
             1024: { slidesPerView: 4 },
           }}
           autoplay={{ delay: 2000, disableOnInteraction: false }}
-        //   navigation={{
-        //     nextEl: ".swiper-button-next",
-        //     prevEl: ".swiper-button-prev",
-        //   }}
+          navigation
           pagination={{ clickable: true }}
           className="pb-6"
         >
           {categories[selectedCategory].map((sub) => (
             <SwiperSlide key={sub.name}>
-              <div className="bg-white shadow-lg rounded-lg p-4 border text-center">
-                <h3 className="text-lg font-bold">{sub.name}</h3>
-                <p className="text-gray-600">{sub.learners} learners</p>
-              </div>
+              <Box className="bg-white shadow-lg rounded-lg p-4 border text-center">
+                <Typography variant="h6" fontWeight="bold">{sub.name}</Typography>
+                <Typography variant="body2" color="textSecondary">{sub.learners} learners</Typography>
+              </Box>
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 }
