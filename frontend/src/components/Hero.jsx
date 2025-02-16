@@ -27,7 +27,7 @@ export default function HeroCarousel() {
   };
 
   return (
-    <Container className="relative w-full lg:h-[500px] overflow-hidden mt-1">
+    <Container className="relative w-full lg:h-[500px] overflow-hidden mt-1" maxWidth="xl">
       <Box
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}

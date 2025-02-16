@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-cards";
+import "../App.css"
 
 function CardSlider() {
     const [courses, setCourses] = useState([]);
@@ -63,6 +64,7 @@ function CardSlider() {
 
     return (
         <div className="w-full max-w-6xl lg:max-w-full mx-auto mt-1 p-5">
+            
           <div className={isMobile ? "block" : "hidden"}>
           <Swiper {...mobileSettings}>
                 {courses.map((course) => (

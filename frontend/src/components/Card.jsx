@@ -3,12 +3,12 @@ import { Star } from "lucide-react";
 export default function CourseCard({ course }) {
   console.log("Card", course)
   return (
-    <div className="bg-white rounded-lg my-4 shadow-md overflow-hidden w-80 hover:shadow-lg transition-shadow duration-300">
-      <img
-        src={course.image.url}
-        alt={course.title}
-        className="w-full h-40 object-cover object-center rounded-lg"
-      />
+    <div className="bg-white rounded-lg my-4 shadow-md overflow-hidden w-[345px] hover:shadow-lg transition-shadow duration-300">
+     <img
+  src={course.image.url}
+  alt={course.title}
+  className="w-full aspect-square object-contain rounded-lg"
+/>
 
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800">{course.title}</h3>

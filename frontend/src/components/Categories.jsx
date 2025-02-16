@@ -48,7 +48,7 @@ export default function CourseCategories() {
   const [selectedCategory, setSelectedCategory] = useState("Data Science");
 
   return (
-    <Container className="p-6">
+    <Container className="p-6" maxWidth="xl">  
       <Box className="flex flex-wrap gap-4 mb-6">
         {Object.keys(categories).map((category) => (
           <Button

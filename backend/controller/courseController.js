@@ -26,7 +26,11 @@ export const createCourse = async (req, res) => {
 
         // ✅ Cloudinary Upload with Logging
         console.log("Uploading to Cloudinary...");
-        const cloudResponse = await cloudinary.uploader.upload(image.tempFilePath);
+        const cloudResponse = await cloudinary.uploader.upload(image.tempFilePath, {
+            width: 345,
+            height: 340,
+            crop: "fit", // Ensures the image fits within the given dimensions without cropping
+          });
 
         console.log("Cloudinary Response:", cloudResponse);
 

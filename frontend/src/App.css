@@ -2,13 +2,24 @@
 .swiper-button-next {
   font-size: 20px !important;
   color: black;
-  width: 20px;
-  height: 30px !important;
+ 
 }
 
 @media (max-width: 639px) {
-  .swiper-button-prev,
+  .swiper-button-prev::after,
   .swiper-button-next {
     display: none !important;
   }
+}
+.swiper-button-prev:after, .swiper-rtl .swiper-button-next:after {
+  content: '‹' !important;
+
+  font-size: 80px !important;
+ 
+}
+
+.swiper-button-next:after, .swiper-rtl .swiper-button-prev:after {
+  content: '›' !important;
+  font-size: 80px !important;
+
 }
