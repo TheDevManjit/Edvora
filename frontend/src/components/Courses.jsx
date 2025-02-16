@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Card from './Card';
 import { fetchCourses } from '../utility/api';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, EffectCards } from "swiper/modules";
+import { Autoplay, Pagination, Navigation, EffectCards, FreeMode ,} from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -28,25 +28,33 @@ function Courses() {
 
 
     // Desktop Swiper Settings
-    const desktopSettings = { 
-        spaceBetween: 20, // Gap between slides
-        slidesPerView: 1, // Default for mobile
-        breakpoints: {
-            640: { slidesPerView: 2 }, // Tablets
-            1024: { slidesPerView: 3 }, // Small laptops
-            1280: { slidesPerView: 4 }, // Large screens
-        },
-        autoplay: {
-            delay: 2500,
-            disableOnInteraction: false,
-        },
-        pagination: { clickable: true },
-        navigation: {
-            enabled: !isMobile, // Hide navigation on mobile
-        },
-        modules: [Autoplay, Pagination, Navigation],
-        className: "mySwiper",
-    };
+    
+  const desktopSettings = {
+    spaceBetween: 20, // Gap between slides
+    slidesPerView: 1, // Default for mobile
+    breakpoints: {
+      640: { slidesPerView: 2 }, // Tablets
+      1024: { slidesPerView: 3 }, // Small laptops
+      1280: { slidesPerView: 4 }, // Large screens
+    },
+    autoplay: {
+      delay: 0,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: false,
+      stopOnLastSlide: false,
+      waitForTransition: false,
+      speed: 4000,
+    },
+    pagination: { clickable: true },
+    navigation: {
+      enabled: !isMobile, // Hide navigation on mobile
+    },
+    loop: true,
+    freeMode: true,
+    modules: [Autoplay, Pagination, Navigation],
+    className: "mySwiper",
+  };
+
 
     useEffect(() => {
         const fetchData = async () => {
