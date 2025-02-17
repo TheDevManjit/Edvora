@@ -1,21 +1,42 @@
-import axios from 'axios';
+import axios from "axios";
 
-const fetchCourses = async () => {
-    try {
-        const response = await axios.get('http://localhost:4001/api/v1/course/getall',{withCredentials:true});
-        return response.data;
-    } catch (error) {
-        console.error(error);
-    }
-}
+const API_BASE_URL = "http://localhost:4001/api/v1"; // Define base URL
 
-const signup = async (formData) => {
-  try{
-    const response = await axios.post('http://localhost:4001/api/v1/user/signup',formData);
+// Fetch all courses
+export const fetchCourses = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/course/getall`, {
+      withCredentials: true, // Use if authentication is required
+    });
     return response.data;
-  }catch(error){
-    console.error("Error in signup",error);
+  } catch (error) {
+    console.error("Error fetching courses:", error.response?.data || error.message);
+    throw error;
   }
-
 };
-export { fetchCourses,signup };
+
+// Fetch course by ID (Fixing your error)
+export const fetchCourseById = async (courseId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/course/${courseId}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching course ${courseId}:`, error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Signup function
+export const signup = async (formData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/user/signup`, formData, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error in signup:", error.response?.data || error.message);
+    throw error;
+  }
+};

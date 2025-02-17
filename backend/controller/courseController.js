@@ -2,15 +2,15 @@ import express from "express";
 import { Course } from "../models/courseModel.js";
 import { Purchase } from "../models/purchaseModel.js";
 import { v2 as cloudinary } from 'cloudinary';
-import e from "express";
 
+// ✅ Create Course
 export const createCourse = async (req, res) => {
     const adminId = req.adminId;
     try {
         const { title, desc, educator, price, discountPrice, rating, totalRating, studentEnrolled, language } = req.body;
 
         if (!title || !desc || !educator || !price || !discountPrice) {
-            return res.status(400).json({ error: "All required fields must be provided (title, desc, educator, price, discountPrice, image)" });
+            return res.status(400).json({ error: "All required fields must be provided (title, desc, educator, price, discountPrice)" });
         }
 
         if (!req.files || Object.keys(req.files).length === 0) {
@@ -24,13 +24,13 @@ export const createCourse = async (req, res) => {
             return res.status(400).json({ error: "File format not supported. Only JPEG, PNG, JPG allowed" });
         }
 
-        // ✅ Cloudinary Upload with Logging
+        // ✅ Upload Image to Cloudinary
         console.log("Uploading to Cloudinary...");
         const cloudResponse = await cloudinary.uploader.upload(image.tempFilePath, {
             width: 345,
             height: 340,
-            crop: "fit", // Ensures the image fits within the given dimensions without cropping
-          });
+            crop: "fit",
+        });
 
         console.log("Cloudinary Response:", cloudResponse);
 
@@ -38,7 +38,7 @@ export const createCourse = async (req, res) => {
             return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
         }
 
-        // ✅ Creating Course with Cloudinary Image URL
+        // ✅ Create New Course
         const newCourse = new Course({
             title,
             desc,
@@ -47,7 +47,7 @@ export const createCourse = async (req, res) => {
             discountPrice,
             image: {
                 public_id: cloudResponse.public_id,
-                url: cloudResponse.secure_url // ✅ Use secure_url
+                url: cloudResponse.secure_url
             },
             rating,
             totalRating,
@@ -58,7 +58,6 @@ export const createCourse = async (req, res) => {
 
         // ✅ Save Course
         const savedCourse = await newCourse.save();
-
         res.status(200).json({ message: "Course saved successfully", savedCourse });
 
     } catch (error) {
@@ -67,35 +66,31 @@ export const createCourse = async (req, res) => {
     }
 };
 
+// ✅ Get All Courses
 export const getCourses = async (req, res) => {
-
     try {
-        const courses = await Course.find()
-        res.status(200).json(courses)
-        // console.log(courses)
+        const courses = await Course.find();
+        res.status(200).json(courses);
     } catch (err) {
-        res.status(500).error
+        res.status(500).json({ error: "Failed to fetch courses" }); // ✅ Fixed error response
     }
+};
 
-}
-
+// ✅ Update Course
 export const updateCourse = async (req, res) => {
     const { course_id } = req.params;
-    const { adminId } = req.adminId
+    const adminId = req.adminId; // ✅ Fixed adminId extraction
+
     const { title, desc, educator, price, discountPrice, rating, totalRatings, studentsEnrolled, language, image } = req.body;
 
-
     try {
-        const courseSearch = await Course.findById(course_id)
+        const courseSearch = await Course.findById(course_id);
         if (!courseSearch) {
-            return res.status(404).json({ errors: "Course not found" });
+            return res.status(404).json({ error: "Course not found" });
         }
 
         const course = await Course.findOneAndUpdate(
-            {
-                _id: course_id,
-                createrId: adminId
-            },
+            { _id: course_id, createrId: adminId },
             {
                 title,
                 desc,
@@ -111,82 +106,85 @@ export const updateCourse = async (req, res) => {
                 studentsEnrolled,
                 language
             },
-            {
-                new: true,  // Return the updated document
-               
-            } 
-        )
+            { new: true }  // ✅ Return updated document
+        );
 
         if (!course) {
-            return res
-                .status(404)
-                .json({ errors: "can't update, created by other admin" });
-        }
-        res.status(201).json({ message: "Course updated successfully", course });
-    } catch (error) {
-        res.status(401).json("course update error", error)
-    }
-
-}
-
-export const deleteCourse = async (req, res) => {
-    const { id } = req.params; // Get the course ID from request parameters
-    const adminId = req.adminId;
-
-    try {
-        // Use findOneAndDelete to find a course with a custom query
-        const course = await Course.findOneAndDelete({ _id: id });
-
-        if (!course) {
-            return res.status(404).json({ message: "Course not found" });
+            return res.status(403).json({ error: "Can't update, created by another admin" });
         }
 
-        res.status(200).json({ message: "Course deleted successfully", deletedCourse: course });
+        res.status(200).json({ message: "Course updated successfully", course });
+
     } catch (error) {
-        res.status(500).json({ error: "Course delete error", details: error.message });
+        console.error("Update error:", error);
+        res.status(500).json({ error: "Course update failed", details: error.message });
     }
 };
 
-export const courseDetails = async (req, res) => {
-    const { courseId } = req.params
-    console.log(courseId)
-    try {
+// ✅ Delete Course
+export const deleteCourse = async (req, res) => {
+    const { id } = req.params;
+    const adminId = req.adminId; // ✅ Fixed adminId extraction
 
-        const course = await Course.findById(courseId)
-        console.log(course)
+    try {
+        const course = await Course.findOneAndDelete({ _id: id, createrId: adminId });
+
         if (!course) {
-            return res.status(404).json({ error: "course hi nhi mila bhai" })
+            return res.status(404).json({ error: "Course not found or unauthorized to delete" });
         }
-        res.status(200).json({ course })
+
+        res.status(200).json({ message: "Course deleted successfully", deletedCourse: course });
 
     } catch (error) {
-        res.status(500).json({ error: "Internal error hai bhai" })
-        console.log("course details me kuchh gadbad hai bhai ")
+        console.error("Delete error:", error);
+        res.status(500).json({ error: "Course delete failed", details: error.message });
     }
-}
+};
 
-export const buyCourse = async (req, res) => {
-    const { userId } = req;
+// ✅ Get Course Details
+export const courseDetails = async (req, res) => {
     const { courseId } = req.params;
+    console.log("Requested Course ID:", courseId);
+
     try {
-        const course = await Course.findById(courseId)
-        console.log(course)
-        console.log(userId)
+        const course = await Course.findById(courseId);
         if (!course) {
-            return res.status(404).json({ error: "course not found" })
+            return res.status(404).json({ error: "Course not found" });
         }
-        const exitingPurchase = await Purchase.findOne({ userId, courseId })
-        if (exitingPurchase) {
-            return res.status(400).json({ error: "You have already purchased this course" })
+        res.status(200).json({ course });
+
+    } catch (error) {
+        console.error("Course details error:", error);
+        res.status(500).json({ error: "Internal server error while fetching course details" });
+    }
+};
+
+// ✅ Buy Course
+export const buyCourse = async (req, res) => {
+    const userId = req.userId; // ✅ Ensure userId exists
+    const { courseId } = req.params;
+
+    if (!userId) {
+        return res.status(401).json({ error: "Unauthorized: User ID missing" });
+    }
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
         }
 
-        const newPurchase = new Purchase({ userId, courseId })
-        await newPurchase.save()
-        res.status(201).json({ message: "course purchased successfully", newPurchase })
+        const existingPurchase = await Purchase.findOne({ userId, courseId });
+        if (existingPurchase) {
+            return res.status(400).json({ error: "You have already purchased this course" });
+        }
 
+        const newPurchase = new Purchase({ userId, courseId });
+        await newPurchase.save();
+        res.status(201).json({ message: "Course purchased successfully", newPurchase });
+
+    } catch (error) {
+        console.error("Buy course error:", error);
+        res.status(500).json({ error: "Internal server error while purchasing course" });
     }
-    catch (error) {
-        res.status(500).json({ error: "Internal error hai bhai courseBuy" })
-        console.log("Buycourse details me kuchh gadbad hai bhai ")
-    }
-}
+};
